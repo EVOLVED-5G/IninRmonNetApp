@@ -2,8 +2,8 @@ class Config:
 
     # 5G NEF API endpoint settings
     NET_APP_NAME   = 'qmonTest'
-    NET_API_PROT   = 'http'
-    NET_API_ADDRESS   = '192.168.202.35' + ':' + '8888'
+    NET_API_PROT   = 'https'
+    NET_API_ADDRESS   = '192.168.202.35' + ':' + '4443'
 
     NET_API_USER   = 'admin@my-email.com'
     NET_API_PASS   = 'pass'

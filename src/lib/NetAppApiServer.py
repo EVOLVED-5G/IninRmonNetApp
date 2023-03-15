@@ -335,7 +335,7 @@ class ApiServer:
         data['client_id'] = ''
         data['client_secret'] = ''
         try:
-            r = requests.post(path, data=data, timeout=10)
+            r = requests.post(path, data=data, timeout=10, verify=False)
             if r.status_code == 200:
                 endpoint['status'] = True
             endpoint['status_code'] = r.status_code

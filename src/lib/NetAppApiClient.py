@@ -76,6 +76,7 @@ class ApiClient:
 
         # SDK
         self.configuration = swagger_client.Configuration()
+        self.configuration.verify_ssl = False
         self.configuration.host = self.NET_API_URL
 
         # Check if token needs to be obtained again

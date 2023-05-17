@@ -102,10 +102,10 @@ class ApiServer:
                 self.apiCollector.q.put(external_id_list)
                 self.log.debug(Config.LOG_5G_NEF, "Put in queue")
 
-            return web.json_response({"result" : "ok"}, status=web.HTTPOk.status_code)
-        else:
-            self.log.debug(Config.LOG_RMON_APP, 'External ID not registered in 5G network ' + externalId)
-            return web.Response(text='External ID not registered in 5G network', status=web.HTTPBadRequest.status_code) 
+                return web.json_response({"result" : "ok"}, status=web.HTTPOk.status_code)
+            else:
+                self.log.debug(Config.LOG_RMON_APP, 'External ID not registered in 5G network ' + externalId)
+                return web.Response(text='External ID not registered in 5G network', status=web.HTTPBadRequest.status_code) 
 
     async def handleRegisterApiMn(self, request):
 

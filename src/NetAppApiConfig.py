@@ -40,6 +40,9 @@ class Config:
     CAPIF_PORT_HTTPS = 443
     CAPIF_CALLBACK_ADDRESS = 'http://localhost:5000'
 
+    # Endpoint test flag
+    ENDPOINT_TEST = False
+
 """
 class Config:
 

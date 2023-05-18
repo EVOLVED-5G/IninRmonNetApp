@@ -371,15 +371,19 @@ class ApiServer:
         
         self.log.debug('NetApp API Server starting ...')
 
-        # Check All Mandatory endpoint connections
-        self.log.debug('NetApp Checking All Enpoints Connections ...')
-        
-        endpoints_status = self.checkEndpointConnections()
-        for endpoint in endpoints_status['endpoints']:
-            if endpoint['status'] == False:
-                self.log.debug('NetApp Enpoints Connections not OK - ' + str(endpoints_status))
-                return False
-        self.log.debug('NetApp Enpoints Connections OK!')
+        # Check if Endpoint need to be validated
+        if self.config.ENDPOINT_TEST:
+            # Check All Mandatory endpoint connections
+            self.log.debug('NetApp Checking All Enpoints Connections ...')
+            
+            endpoints_status = self.checkEndpointConnections()
+            for endpoint in endpoints_status['endpoints']:
+                if endpoint['status'] == False:
+                    self.log.debug('NetApp Enpoints Connections not OK - ' + str(endpoints_status))
+                    return False
+            self.log.debug('NetApp Enpoints Connections OK!')
+        else:
+            self.log.debug('Endpoints tests not enabled')      
 
         # Validate API Client
         if self.apiClient.validateTokenSDK():

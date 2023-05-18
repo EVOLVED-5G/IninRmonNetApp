@@ -68,20 +68,24 @@ class ApiClient:
         except Exception as e:
             raise ApiError("capif config -> " + str(e)) 
 
-        # CAPIF CONNECTOR 
-        self.capif_connector()
+        # Endpoint test flag
+        if self.config.ENDPOINT_TEST:
+            # CAPIF CONNECTOR 
+            self.capif_connector()
 
-        # CAPIF DISCOVERY 
-        self.capif_discovery = self.capif_service_discovery()
+            # CAPIF DISCOVERY 
+            self.capif_discovery = self.capif_service_discovery()
 
-        # SDK
-        self.configuration = swagger_client.Configuration()
-        self.configuration.verify_ssl = False
-        self.configuration.host = self.NET_API_URL
+            # SDK
+            self.configuration = swagger_client.Configuration()
+            self.configuration.verify_ssl = False
+            self.configuration.host = self.NET_API_URL
 
-        # Check if token needs to be obtained again
-        if self.token == None:
-            self.token, self.type = self.register_netapp_to_nef()
+            # Check if token needs to be obtained again
+            if self.token == None:
+                self.token, self.type = self.register_netapp_to_nef()
+        else:
+            self.log.debug(Config.LOG_NET_APP, 'CAPIF and NEF connection not enabled due to Endpoint test not enabled!')
 
     def register_netapp_to_nef(self):
         api_client = swagger_client.ApiClient(configuration=self.configuration)
@@ -155,6 +159,11 @@ class ApiClient:
         return endpoints
 
     def validateTokenSDK(self):
+
+        # Check if endpoints need to be tested
+        if self.config.ENDPOINT_TEST == False:
+            return True
+
         self.configuration.access_token = self.token
         api_client = swagger_client.ApiClient(configuration=self.configuration)
         api = LoginApi(api_client)
@@ -162,7 +171,7 @@ class ApiClient:
 
         try:
             return response[0].is_active
-        except:
+        except Exception:
             None
 
         # Generate new token again

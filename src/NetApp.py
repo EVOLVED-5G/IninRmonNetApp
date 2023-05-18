@@ -33,18 +33,23 @@ if __name__ == '__main__':
     parser.add_option("-p", action="store", dest="CAPIF_PORT_HTTP", help="CAPIF HTTP port", default=Config.CAPIF_PORT_HTTP)
     parser.add_option("-S", action="store", dest="CAPIF_PORT_HTTPS", help="CAPIF HTTPS port", default=Config.CAPIF_PORT_HTTPS)
     parser.add_option("-u", action="store", dest="CAPIF_CALLBACK_ADDRESS", help="CAPIF Callback address", default=Config.CAPIF_CALLBACK_ADDRESS)
+    parser.add_option("-e", action="store", dest="ENDPOINT_TEST", help="Endpoint test flag", default=Config.ENDPOINT_TEST)
 
     (options, args) = parser.parse_args()
 
     # Save options to config file
     config = options
 
+    # Check Endpoint flag
+    if config.ENDPOINT_TEST in ['true', 'True']:
+        config.ENDPOINT_TEST = True
+    else:
+        config.ENDPOINT_TEST = False   
+
     print(config)
 
     netapplogger = NetAppLog(netapp_name=config.NET_APP_NAME)
     netapplogger.debug('NetApp starting ...')
-
-    print(config.NET_API_USER)
 
     # Start API server
     apiServer = ApiServer(netapplogger, config)

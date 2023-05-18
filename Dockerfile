@@ -24,8 +24,8 @@ COPY src/*.py /app/
 COPY src/lib/* /app/lib/
 COPY entrypoint.sh /app/
 
-RUN mkdir -p /app/capif_onboarding/
-
 # Run rMON NetApp
 ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]
 # ENTRYPOINT ["python3", "/app/NetApp.py"]
+
+EXPOSE 80/tcp

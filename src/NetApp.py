@@ -41,7 +41,7 @@ if __name__ == '__main__':
     config = options
 
     # Check Endpoint flag
-    if config.ENDPOINT_TEST in ['true', 'True']:
+    if config.ENDPOINT_TEST in ['true', 'True', True]:
         config.ENDPOINT_TEST = True
     else:
         config.ENDPOINT_TEST = False   

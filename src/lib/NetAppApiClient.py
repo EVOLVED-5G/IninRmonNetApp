@@ -17,6 +17,7 @@ from evolved5g.sdk import QosAwareness
 from evolved5g.sdk import ConnectionMonitor
 from evolved5g.sdk import ServiceDiscoverer
 from evolved5g.sdk import CAPIFInvokerConnector
+#import evolved5g
 from evolved5g.swagger_client import UsageThreshold
 from evolved5g.swagger_client.api.qo_s_information_api import QoSInformationApi
 
@@ -51,6 +52,9 @@ class ApiClient:
         self.monConnLossSubId  = {}
         self.monConnReachSubId = {}
         self.qosSubId          = {}
+
+        #print('evolved5g.__version__ ->',evolved5g.__version__)
+        #print('dir(evolved5g.sdk.CAPIFInvokerConnector) ->', dir(evolved5g.sdk.CAPIFInvokerConnector))
 
         # Define static paths and urls
         self.CALLBACK_PATH   = '/api/v1/utils/monitoring/callback/'
@@ -191,7 +195,6 @@ class ApiClient:
         expireTime = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%S.%f')
 
         connection_subscriber = ConnectionMonitor(nef_url=self.NET_API_URL, 
-                                                nef_bearer_access_token=self.token,
                                                 folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                                 capif_host=self.capif_host,
                                                 capif_https_port=self.capif_https_port)
@@ -230,7 +233,6 @@ class ApiClient:
         expireTime = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%S.%f')
 
         connection_subscriber = ConnectionMonitor(nef_url=self.NET_API_URL, 
-                                                nef_bearer_access_token=self.token,
                                                 folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                                 capif_host=self.capif_host,
                                                 capif_https_port=self.capif_https_port)
@@ -269,7 +271,6 @@ class ApiClient:
         expireTime = (datetime.now() + timedelta(hours=24)).strftime('%Y-%m-%dT%H:%M:%S.%f')
 
         location_subscriber = LocationSubscriber(nef_url=self.NET_API_URL, 
-                                                nef_bearer_access_token=self.token,
                                                 folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                                 capif_host=self.capif_host,
                                                 capif_https_port=self.capif_https_port)
@@ -300,7 +301,6 @@ class ApiClient:
     def readActiveAndDeleteQosSubscriptionsSDK(self):
 
         qos_awereness = QosAwareness(nef_url=self.NET_API_URL, 
-                                    nef_bearer_access_token=self.token,
                                     folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                     capif_host=self.capif_host,
                                     capif_https_port=self.capif_https_port)
@@ -325,7 +325,6 @@ class ApiClient:
         # createMonitorEventSubsQosSDK
 
         qos_awereness = QosAwareness(nef_url=self.NET_API_URL, 
-                                    nef_bearer_access_token=self.token,
                                     folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                     capif_host=self.capif_host,
                                     capif_https_port=self.capif_https_port)
@@ -380,7 +379,6 @@ class ApiClient:
     def readActiveAndDeleteLocSubscriptionsSDK(self):
 
         location_subscriber = LocationSubscriber(nef_url=self.NET_API_URL, 
-                                        nef_bearer_access_token=self.token,
                                         folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                         capif_host=self.capif_host,
                                         capif_https_port=self.capif_https_port)
@@ -390,10 +388,10 @@ class ApiClient:
             all_subscriptions = location_subscriber.get_all_subscriptions(self.config.NET_APP_NAME, 0, 100)
 
             for subscription in all_subscriptions:
+                id = subscription.link.split("/")[-1]
 
                 # Check, Loc and Con monitor has same subscriptions list
                 if id not in self.monConnLossSubId.values() or id not in self.monConnReachSubId.values():
-                    id = subscription.link.split("/")[-1]
                     self.log.debug(Config.LOG_NEF_SDK, "Deleting Location subscription with ID: " + id)
                     location_subscriber.delete_subscription(self.config.NET_APP_NAME, id)
                 
@@ -408,7 +406,6 @@ class ApiClient:
     def readActiveAndDeleteConnectionSubscriptionsSDK(self):
 
         connection_subscriber = ConnectionMonitor(nef_url=self.NET_API_URL, 
-                                                nef_bearer_access_token=self.token,
                                                 folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                                 capif_host=self.capif_host,
                                                 capif_https_port=self.capif_https_port)
@@ -437,7 +434,6 @@ class ApiClient:
     def deleteActiveMonLocSubscriptionSDK(self, external_id):
 
         location_subscriber = LocationSubscriber(nef_url=self.NET_API_URL, 
-                                        nef_bearer_access_token=self.token,
                                         folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                         capif_host=self.capif_host,
                                         capif_https_port=self.capif_https_port)
@@ -457,7 +453,6 @@ class ApiClient:
     def deleteActiveMonConSubscriptionSDK(self, external_id):
 
         connection_subscriber = ConnectionMonitor(nef_url=self.NET_API_URL, 
-                                        nef_bearer_access_token=self.token,
                                         folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                         capif_host=self.capif_host,
                                         capif_https_port=self.capif_https_port)
@@ -489,7 +484,6 @@ class ApiClient:
     def deleteActiveQosSubscriptionSDK(self, external_id):
 
         qos_awereness = QosAwareness(nef_url=self.NET_API_URL, 
-                                    nef_bearer_access_token=self.token,
                                     folder_path_for_certificates_and_capif_api_key=self.capif_path_certificates,
                                     capif_host=self.capif_host,
                                     capif_https_port=self.capif_https_port)

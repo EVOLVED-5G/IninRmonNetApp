@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ininrmonnetapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ininrmonnetapp
+  template:
+    metadata:
+      labels:
+        app: ininrmonnetapp
+    spec:
+      containers:
+        - name: ininrmonnetapp
+          image: core-harbor.qmon.eu/evolved5g/rmonnetapp
+          imagePullPolicy: Always
+          env:
+            - name: NET_APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: NET_APP_NAME
+            - name: NET_API_PROT
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: NET_API_PROT
+            - name: NET_API_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: NET_API_ADDRESS
+            - name: NET_API_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: NET_API_USER
+            - name: NET_API_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: NET_API_PASS
+            - name: CALLBACK_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CALLBACK_ADDRESS
+            - name: COLLECTOR_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: COLLECTOR_HOST
+            - name: COLLECTOR_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: COLLECTOR_USER
+            - name: COLLECTOR_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: COLLECTOR_PASS
+            - name: MN_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: MN_HOST
+            - name: MN_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: MN_TOKEN
+            - name: CAPIF_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CAPIF_PATH
+            - name: CAPIF_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CAPIF_HOSTNAME
+            - name: CAPIF_PORT_HTTP
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CAPIF_PORT_HTTP
+            - name: CAPIF_PORT_HTTPS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CAPIF_PORT_HTTPS
+            - name: CAPIF_CALLBACK_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: CAPIF_CALLBACK_ADDRESS
+            - name: ENDPOINT_TEST
+              valueFrom:
+                configMapKeyRef:
+                  name: ininrmon-configmap
+                  key: ENDPOINT_TEST
+          ports:
+          - containerPort: 80
+      #hostAliases:
+      #  - ip: "192.168.202.35"
+      #    hostnames:
+      #      - "nefemu"
+      #  - ip: "192.168.202.35"
+      #    hostnames:
+      #      - "capifcore"

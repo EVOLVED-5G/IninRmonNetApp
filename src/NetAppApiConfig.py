@@ -43,6 +43,9 @@ class Config:
     # Endpoint test flag
     ENDPOINT_TEST = False
 
+    # Environment mode
+    ENVIRONMENT_MODE = 'development'
+
 """
 class Config:
 

@@ -17,9 +17,9 @@ from evolved5g.sdk import QosAwareness
 from evolved5g.sdk import ConnectionMonitor
 from evolved5g.sdk import ServiceDiscoverer
 from evolved5g.sdk import CAPIFInvokerConnector
-#import evolved5g
 from evolved5g.swagger_client import UsageThreshold
 from evolved5g.swagger_client.api.qo_s_information_api import QoSInformationApi
+from evolved5g.nef_and_tsn_api_service_validation_pipeline import validate_all_endpoints_returned_by_service_discoverer
 
 class ApiError(Exception):
 
@@ -52,9 +52,6 @@ class ApiClient:
         self.monConnLossSubId  = {}
         self.monConnReachSubId = {}
         self.qosSubId          = {}
-
-        #print('evolved5g.__version__ ->',evolved5g.__version__)
-        #print('dir(evolved5g.sdk.CAPIFInvokerConnector) ->', dir(evolved5g.sdk.CAPIFInvokerConnector))
 
         # Define static paths and urls
         self.CALLBACK_PATH   = '/api/v1/utils/monitoring/callback/'
@@ -119,26 +116,61 @@ class ApiClient:
     def capif_connector(self):
 
         try:
+
+            # Generate CAPIF config JSON 
+            capif_config_json = {
+                "folder_to_store_certificates": self.config.CAPIF_PATH,
+                "capif_host": self.config.CAPIF_HOSTNAME,
+                "capif_http_port": int(self.config.CAPIF_PORT_HTTP),
+                "capif_https_port": int(self.config.CAPIF_PORT_HTTPS),
+                "capif_netapp_username": self.generate_user_pass(),
+                "capif_netapp_password": self.generate_user_pass(),
+                "capif_callback_url": self.config.CAPIF_CALLBACK_ADDRESS,
+                "description": ",test_app_description",
+                "csr_common_name": "test_app_common_name",
+                "csr_organizational_unit": "test_app_ou",
+                "csr_organization": "test_app_o",
+                "crs_locality": "Ljubljana",
+                "csr_state_or_province_name": "Ljubljana",
+                "csr_country_name": "SI",
+                "csr_email_address": "test@example.com"
+            }
+
+            # CAPIF connector
             capif_connector = CAPIFInvokerConnector(
-                                                folder_to_store_certificates=self.config.CAPIF_PATH,
-                                                capif_host=self.config.CAPIF_HOSTNAME,
-                                                capif_http_port=int(self.config.CAPIF_PORT_HTTP),
-                                                capif_https_port=int(self.config.CAPIF_PORT_HTTPS),
-                                                capif_netapp_username=self.generate_user_pass(),
-                                                capif_netapp_password=self.generate_user_pass(),
-                                                capif_callback_url=self.config.CAPIF_CALLBACK_ADDRESS,
-                                                description= "test_app_description",
-                                                csr_common_name="test_app_common_name",
-                                                csr_organizational_unit="test_app_ou",
-                                                csr_organization="test_app_o",
-                                                crs_locality="Ljubljana",
-                                                csr_state_or_province_name="Ljubljana",
-                                                csr_country_name="SI",
-                                                csr_email_address="test@example.com",
+                                                folder_to_store_certificates=capif_config_json['folder_to_store_certificates'],
+                                                capif_host=capif_config_json['capif_host'],
+                                                capif_http_port=capif_config_json['capif_http_port'],
+                                                capif_https_port=capif_config_json['capif_https_port'],
+                                                capif_netapp_username=capif_config_json['capif_netapp_username'],
+                                                capif_netapp_password=capif_config_json['capif_netapp_password'],
+                                                capif_callback_url=capif_config_json['capif_callback_url'],
+                                                description=capif_config_json['description'],
+                                                csr_common_name=capif_config_json['csr_common_name'],
+                                                csr_organizational_unit=capif_config_json['csr_organizational_unit'],
+                                                csr_organization=capif_config_json['csr_organization'],
+                                                crs_locality=capif_config_json['crs_locality'],
+                                                csr_state_or_province_name=capif_config_json['csr_state_or_province_name'],
+                                                csr_country_name=capif_config_json['csr_country_name'],
+                                                csr_email_address=capif_config_json['csr_email_address'],
                                                 )
 
-            connection = capif_connector.register_and_onboard_netapp()
+            capif_connector.register_and_onboard_netapp()
             self.log.debug(Config.LOG_NET_APP, 'CAPIF connection OK!')
+
+            # Store JSON to file
+            with open(self.config.CAPIF_PATH + "netapp_capif_connector_config_file.json", "w") as outfile:
+                json.dump(capif_config_json, outfile)
+
+            # Validate endpoints
+            if self.config.ENVIRONMENT_MODE == 'production':
+                endpoint_validation = validate_all_endpoints_returned_by_service_discoverer(self.config.CAPIF_PATH + "netapp_capif_connector_config_file.json")
+                if endpoint_validation == True:
+                    self.log.debug(Config.LOG_NET_APP, 'CAPIF endpoints validation and service discoverer OK!')
+                else:
+                    self.log.error(Config.LOG_ERROR, 'CAPIF endpoints validation and service discoverer NOK!')
+                    raise ApiError("CAPIF ndpoints validation and service discoverer error!")                    
+
         except Exception as e:
             self.log.error(Config.LOG_ERROR, 'CAPIF connector error: ' + str(e))
             raise ApiError("CAPIF connector error -> " + str(e)) 

@@ -34,6 +34,7 @@ if __name__ == '__main__':
     parser.add_option("-S", action="store", dest="CAPIF_PORT_HTTPS", help="CAPIF HTTPS port", default=Config.CAPIF_PORT_HTTPS)
     parser.add_option("-u", action="store", dest="CAPIF_CALLBACK_ADDRESS", help="CAPIF Callback address", default=Config.CAPIF_CALLBACK_ADDRESS)
     parser.add_option("-e", action="store", dest="ENDPOINT_TEST", help="Endpoint test flag", default=Config.ENDPOINT_TEST)
+    parser.add_option("-E", action="store", dest="ENVIRONMENT_MODE", help="Environmental mode", default=Config.ENVIRONMENT_MODE)
 
     (options, args) = parser.parse_args()
 

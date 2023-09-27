@@ -20,3 +20,5 @@ data:
   CAPIF_PORT_HTTPS: "443"
   CAPIF_CALLBACK_ADDRESS: "http://capifcore:5000"
   ENDPOINT_TEST: "True"
+  ENVIRONMENT_MODE: "production"
+

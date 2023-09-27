@@ -163,8 +163,7 @@ class ApiClient:
                 json.dump(capif_config_json, outfile)
 
             # Validate endpoints
-            #if self.config.ENVIRONMENT_MODE == 'production':
-            if True:
+            if self.config.ENVIRONMENT_MODE == 'production':
                 endpoint_validation = validate_all_endpoints_returned_by_service_discoverer(self.config.CAPIF_PATH + "netapp_capif_connector_config_file.json")
                 if endpoint_validation == True:
                     self.log.debug(Config.LOG_NET_APP, 'CAPIF endpoints validation and service discoverer OK!')

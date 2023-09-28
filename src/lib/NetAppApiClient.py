@@ -94,8 +94,7 @@ class ApiClient:
         api = LoginApi(api_client)
         token = None
         try:
-            #token = api.login_access_token_api_v1_login_access_token_post("", self.config.NET_API_USER, self.config.NET_API_PASS, "", "", "")
-            token = api.login_access_token_api_v1_login_access_token_post("","admin@my-email.com", "pass", "", "", "")
+            token = api.login_access_token_api_v1_login_access_token_post("", self.config.NET_API_USER, self.config.NET_API_PASS, "", "", "")
             self.log.debug(Config.LOG_NEF_SDK, 'Token: ' + str(token))
         except Exception as e:
             self.log.error(Config.LOG_ERROR, str(e))     

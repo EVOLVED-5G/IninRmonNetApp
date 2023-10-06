@@ -13,15 +13,16 @@ from lib.NetAppNotify import Notify
 
 class ApiCollector (threading.Thread):
 
-    def __init__(self, log='', config={}):
+    def __init__(self, log='', config={}, kpi_timers={}):
         threading.Thread.__init__(self)
         self.log = log
         self.config = config
+        self.kpi_timers = kpi_timers
         self.q = queue.Queue()
         self.log.debug(Config.LOG_RMON_COL, "Init thread")
 
         # Init MN notify 
-        self.notify = Notify(log=self.log, config=self.config)
+        self.notify = Notify(log=self.log, config=self.config, kpi_timers=self.kpi_timers)
         self.notify.start()
 
     def run(self):
@@ -35,12 +36,13 @@ class ApiCollector (threading.Thread):
 
             event = item[0]
             external_id = item[1]
+            kpi_hash = item[2]
 
             qos_reporting_mode = ''
-            if len(item) >= 3:
-                qos_reporting_mode = item[2]
+            if len(item) >= 4:
+                qos_reporting_mode = item[3]
 
-            self.jsonUploadToCollector(event, external_id, qos_reporting_mode)
+            self.jsonUploadToCollector(event, external_id, kpi_hash, qos_reporting_mode)
 
             self.q.task_done()
 
@@ -62,7 +64,7 @@ class ApiCollector (threading.Thread):
         with open(file_name, 'w') as payload:
             json.dump(json_data, payload)
 
-    def jsonUploadToCollector(self, update_data, externalId, qos_reporting_mode):
+    def jsonUploadToCollector(self, update_data, externalId, kpi_hash, qos_reporting_mode):
 
         data_json = json.loads(update_data)
         #self.log.debug(Config.LOG_RMON_COL, "Prepare JSON for UPLOAD: " + str(data_json))
@@ -109,7 +111,7 @@ class ApiCollector (threading.Thread):
 
                 # Put MN detailed JSON into Q
                 self.log.debug(Config.LOG_RMON_COL, "MN detailed data: " + json.dumps(mn_data))
-                external_id_list = [mn_data, externalId]
+                external_id_list = [mn_data, externalId, kpi_hash]
                 self.notify.q.put(external_id_list)
                 self.log.debug(Config.LOG_RMON_COL, "Put in queue")
             except:
@@ -149,7 +151,7 @@ class ApiCollector (threading.Thread):
 
                 # Put MN detailed JSON into Q
                 self.log.debug(Config.LOG_RMON_COL, "MN detailed data: " + json.dumps(mn_data))
-                external_id_list = [mn_data, externalId]
+                external_id_list = [mn_data, externalId, kpi_hash]
                 self.notify.q.put(external_id_list)
                 self.log.debug(Config.LOG_RMON_COL, "Put in queue")
             except:
@@ -194,7 +196,7 @@ class ApiCollector (threading.Thread):
 
                 # Put MN detailed JSON into Q
                 self.log.debug(Config.LOG_RMON_COL, "MN detailed data: " + json.dumps(mn_data))
-                external_id_list = [mn_data, externalId]
+                external_id_list = [mn_data, externalId, kpi_hash]
                 self.notify.q.put(external_id_list)
                 self.log.debug(Config.LOG_RMON_COL, "Put in queue")
             except:
@@ -294,7 +296,7 @@ class ApiCollector (threading.Thread):
 
                 # Put MN detailed JSON into Q
                 self.log.debug(Config.LOG_RMON_COL, "MN detailed data: " + json.dumps(mn_data))
-                external_id_list = [mn_data, externalId]
+                external_id_list = [mn_data, externalId, kpi_hash]
                 self.notify.q.put(external_id_list)
                 self.log.debug(Config.LOG_RMON_COL, "Put in queue")
             except:

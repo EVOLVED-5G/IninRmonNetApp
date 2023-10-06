@@ -1,5 +1,7 @@
 import json
 import requests
+import random
+import time
 from requests.auth import HTTPBasicAuth
 from aiohttp import web
 from NetAppApiConfig import Config
@@ -15,6 +17,7 @@ class ApiServer:
         self.app = web.Application()
         self.active_ext_id = []
         self.mn_api_version = "v2"
+        self.kpi_timers = {}
 
         # Init Client object and token
         self.apiClient = ApiClient(log=self.log, config=self.config)
@@ -23,7 +26,7 @@ class ApiServer:
         self.qosReportingMode = '-1'
 
         # Init Collector object
-        self.apiCollector = ApiCollector(log=self.log, config=self.config)
+        self.apiCollector = ApiCollector(log=self.log, config=self.config, kpi_timers=self.kpi_timers)
         self.apiCollector.start()
 
 
@@ -45,7 +48,12 @@ class ApiServer:
 
                 # Create JSON file and push to collector queue
                 event = response.decode('utf-8')
-                external_id_list = [event, externalId]
+
+                # KPI hash - timestamp
+                kpi_hash = random.getrandbits(32)
+                self.kpi_timers[kpi_hash] = int(time.time() * 1000)
+
+                external_id_list = [event, externalId, kpi_hash]
                 self.apiCollector.q.put(external_id_list)
                 self.log.debug(Config.LOG_5G_NEF, "Put in queue")
 
@@ -72,7 +80,12 @@ class ApiServer:
 
                 # Create JSON file and push to collector queue
                 event = response.decode('utf-8')
-                external_id_list = [event, externalId]
+
+                # KPI hash - timestamp
+                kpi_hash = random.getrandbits(32)
+                self.kpi_timers[kpi_hash] = int(time.time() * 1000)
+
+                external_id_list = [event, externalId, kpi_hash]
                 self.apiCollector.q.put(external_id_list)
                 self.log.debug(Config.LOG_5G_NEF, "Put in queue")
 
@@ -98,7 +111,12 @@ class ApiServer:
 
                 # Create JSON file and push to collector queue
                 event = response.decode('utf-8')
-                external_id_list = [event, externalId, self.qosReportingMode]
+
+                # KPI hash - timestamp
+                kpi_hash = random.getrandbits(32)
+                self.kpi_timers[kpi_hash] = int(time.time() * 1000)
+
+                external_id_list = [event, externalId, kpi_hash, self.qosReportingMode]
                 self.apiCollector.q.put(external_id_list)
                 self.log.debug(Config.LOG_5G_NEF, "Put in queue")
 

@@ -3,6 +3,7 @@ version: "3.6"
 services:
 
   rmonnetapp:
+    container_name: rmonnetapp
     image: rmonnetapp:latest
     build:
       context: .
